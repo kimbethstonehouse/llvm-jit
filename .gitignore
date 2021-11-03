@@ -1,2 +1,4 @@
-LLVMJIT/build/
-**.idea/
+**/build
+**/.idea
+**/CMakeFiles
+*.cmake
