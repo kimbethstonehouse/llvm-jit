@@ -1,4 +1,5 @@
 **/build
 **/.idea
 **/CMakeFiles
+**/cmake-build-debug
 *.cmake
