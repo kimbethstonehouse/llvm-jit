@@ -8,7 +8,7 @@ option(WAVM_ENABLE_STATIC_LINKING "use static linking instead of dynamic for the
 set(LLVMJIT_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR})
 set(LLVMJIT_SOURCE_DIR ${LLVMJIT_ROOT_DIR}/src)
 set(LLVMJIT_INCLUDE_DIR ${LLVMJIT_ROOT_DIR}/include)
-set(WAVM_INCLUDE_DIR ${LLVMJIT_ROOT_DIR}/../WAVM/Include)
+set(WAVM_INCLUDE_DIR ${LLVMJIT_ROOT_DIR}/../wavm/Include)
 
 # Create the LLVMJIT library
 add_library(LLVMJIT SHARED
