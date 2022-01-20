@@ -4,11 +4,32 @@ project(LLVMJIT)
 # Set dynamic linking to on
 option(WAVM_ENABLE_STATIC_LINKING "use static linking instead of dynamic for the WAVM libraries" OFF)
 
-# Bind some useful paths to variables
+# Bind some variables to useful paths
 set(LLVMJIT_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR})
 set(LLVMJIT_SOURCE_DIR ${LLVMJIT_ROOT_DIR}/src)
 set(LLVMJIT_INCLUDE_DIR ${LLVMJIT_ROOT_DIR}/include)
 set(WAVM_INCLUDE_DIR ${LLVMJIT_ROOT_DIR}/../wavm/Include)
+
+# If no build type is specified, default to RelWithDebInfo
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+	set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "The type of build (Debug, Release, RelWithDebInfo, or MinSizeRel" FORCE)
+endif()
+
+# By default, CMake uses different optimization settings for Release vs RelWithDebInfo builds.
+# For GCC, it uses -O3 in Release and -O2 in RelWithDebInfo.
+# For MSVC, it uses /Ob2 in Release and /Ob1 in RelWithDebInfo (amount of inlining).
+# In order to reduce problems that only occur in Release builds without debug symbols, override the
+# default optimization settings so RelWithDebInfo uses the same optimization settings as Release.
+set(CMAKE_C_FLAGS_RELWITHDEBINFO_LOCAL ${CMAKE_C_FLAGS_RELWITHDEBINFO})
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_LOCAL ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
+string(REPLACE "-O2" "-O3" CMAKE_C_FLAGS_RELWITHDEBINFO_LOCAL ${CMAKE_C_FLAGS_RELWITHDEBINFO_LOCAL})
+string(REPLACE "-O2" "-O3" CMAKE_CXX_FLAGS_RELWITHDEBINFO_LOCAL ${CMAKE_CXX_FLAGS_RELWITHDEBINFO_LOCAL})
+#string(REPLACE "-O3" "-O" CMAKE_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
+#string(REPLACE "-O3" "-O" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
+string(REPLACE "/Ob1" "/Ob2" CMAKE_C_FLAGS_RELWITHDEBINFO_LOCAL ${CMAKE_C_FLAGS_RELWITHDEBINFO_LOCAL})
+string(REPLACE "/Ob1" "/Ob2" CMAKE_CXX_FLAGS_RELWITHDEBINFO_LOCAL ${CMAKE_CXX_FLAGS_RELWITHDEBINFO_LOCAL})
+set(CMAKE_C_FLAGS_RELWITHDEBINFO ${CMAKE_C_FLAGS_RELWITHDEBINFO_LOCAL} CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_CXX_FLAGS_RELWITHDEBINFO_LOCAL} CACHE STRING "" FORCE)
 
 # Create the LLVMJIT library
 add_library(LLVMJIT SHARED
